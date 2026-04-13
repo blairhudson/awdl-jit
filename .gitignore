@@ -1,0 +1,7 @@
+.build/
+dist/
+site/
+*.swp
+*.DS_Store
+tools/awdl-jit-ls
+.opencode

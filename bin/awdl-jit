@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+AWDL_JIT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# shellcheck source=../lib/common.sh
+source "$AWDL_JIT_ROOT/lib/common.sh"
+# shellcheck source=../lib/detect.sh
+source "$AWDL_JIT_ROOT/lib/detect.sh"
+# shellcheck source=../lib/install.sh
+source "$AWDL_JIT_ROOT/lib/install.sh"
+# shellcheck source=../lib/uninstall.sh
+source "$AWDL_JIT_ROOT/lib/uninstall.sh"
+# shellcheck source=../lib/interactive.sh
+source "$AWDL_JIT_ROOT/lib/interactive.sh"
+
+usage() {
+  cat <<'EOF'
+Usage: awdl-jit [--yes] <command> [target]
+
+Commands:
+  interactive        Start the interactive installer menu
+  detect             List supported targets found on this Mac
+  doctor             Check toolchain and app prerequisites
+  status [target]    Show installed AWDL-JIT artifacts
+  install [target]   Generate launcher, monitor, watcher, and handlers
+  repair [target]    Rebuild generated artifacts for an installed target
+  uninstall [target] Remove generated artifacts and restore handlers
+  help               Show this help text
+
+Targets:
+  geforcenow         NVIDIA GeForce NOW
+
+Flags:
+  -y, --yes          Skip confirmation prompts
+EOF
+}
+
+ASSUME_YES=0
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -y|--yes)
+      ASSUME_YES=1
+      shift
+      ;;
+    help|-h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+export AWDL_JIT_ASSUME_YES="$ASSUME_YES"
+
+COMMAND="${1:-interactive}"
+if [ "$#" -gt 0 ]; then
+  shift
+fi
+
+case "$COMMAND" in
+  interactive)
+    cmd_interactive "$@"
+    ;;
+  detect)
+    cmd_detect "$@"
+    ;;
+  doctor)
+    cmd_doctor "$@"
+    ;;
+  status)
+    cmd_status "$@"
+    ;;
+  install)
+    cmd_install "$@"
+    ;;
+  repair)
+    cmd_repair "$@"
+    ;;
+  uninstall)
+    cmd_uninstall "$@"
+    ;;
+  help)
+    usage
+    ;;
+  *)
+    err "Unknown command: $COMMAND"
+    usage >&2
+    exit 1
+    ;;
+esac
