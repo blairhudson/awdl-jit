@@ -1,6 +1,8 @@
 # AWDL-JIT
 
-`AWDL-JIT` is a macOS utility project that generates lightweight launchers and background watchers to make `AWDLControl.app` start and stop alongside supported apps.
+`AWDL-JIT` is a macOS utility project that generates lightweight launchers and background watchers to make [`AWDLControl.app`](https://github.com/james-howard/AWDLControl) start and stop alongside supported apps.
+
+For GeForce NOW on Mac, this project automates the `AWDLControl`-based solution [recommended by NVIDIA](https://nvidia.custhelp.com/app/answers/detail/a_id/5801/~/i-am-experiencing-stuttering%2C-high-latency%2C-or-audio-issues-on-geforce-now-when) inside the GeForce NOW app.
 
 <p align="center">
   Sponsored by <a href="https://skillcraft.gg">Skillcraft</a>.
@@ -14,7 +16,7 @@
 
 ## Current target
 
-- `geforcenow`: NVIDIA GeForce NOW + AWDL Control
+- `geforcenow`: NVIDIA GeForce NOW + [`AWDLControl`](https://github.com/james-howard/AWDLControl)
 
 ## Quick Start
 
@@ -45,7 +47,7 @@ The fallback watcher cannot make a direct launch happen after `AWDLControl` has 
 ## Requirements
 
 - macOS
-- installed target app and `AWDLControl.app`
+- installed target app and [`AWDLControl.app`](https://github.com/james-howard/AWDLControl)
 - for source builds: Command Line Tools with `swift`
 - for release builds: no Swift requirement
 
@@ -128,7 +130,7 @@ For `geforcenow`, AWDL-JIT writes to:
 ## Notes
 
 - AWDL-JIT does not modify or replace the original target app bundle.
-- AWDL-JIT does not modify or redistribute `AWDLControl.app`.
+- AWDL-JIT does not modify or redistribute [`AWDLControl.app`](https://github.com/james-howard/AWDLControl).
 - GitHub releases can bundle the prebuilt `awdl-jit-ls` helper so end users do not need Swift installed.
 
 ## Releases

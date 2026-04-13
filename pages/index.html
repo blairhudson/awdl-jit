@@ -4,31 +4,195 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AWDL-JIT</title>
+    <meta name="description" content="One-command setup for the AWDLControl workflow recommended by NVIDIA for GeForce NOW on Mac.">
+    <meta property="og:title" content="AWDL-JIT">
+    <meta property="og:description" content="One-command setup for the AWDLControl workflow recommended by NVIDIA for GeForce NOW on Mac.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://blairhudson.com/awdl-jit/">
     <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f7fb;
+        --panel: rgba(255, 255, 255, 0.88);
+        --text: #10131a;
+        --muted: #4e5667;
+        --border: rgba(16, 19, 26, 0.1);
+        --code-bg: #0d1117;
+        --code-text: #f6f8fa;
+        --accent: #1f6feb;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b0d12;
+          --panel: rgba(17, 21, 29, 0.92);
+          --text: #edf2f7;
+          --muted: #a9b4c3;
+          --border: rgba(255, 255, 255, 0.08);
+          --code-bg: #03070d;
+          --code-text: #f6f8fa;
+          --accent: #6ea8fe;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        max-width: 46rem;
-        margin: 3rem auto;
-        padding: 0 1rem;
+        margin: 0;
+        background: radial-gradient(circle at top, rgba(31, 111, 235, 0.12), transparent 28%), var(--bg);
+        color: var(--text);
         line-height: 1.5;
       }
-      code, pre {
+
+      main {
+        max-width: 52rem;
+        margin: 0 auto;
+        padding: 3rem 1rem 4rem;
+      }
+
+      .hero,
+      .section {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+      }
+
+      .hero {
+        padding: 2rem;
+      }
+
+      .section {
+        margin-top: 1rem;
+        padding: 1.25rem 1.25rem 1rem;
+      }
+
+      h1,
+      h2,
+      p,
+      ul {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 0.5rem;
+        font-size: clamp(2rem, 5vw, 3rem);
+        line-height: 1.05;
+      }
+
+      h2 {
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      p,
+      li {
+        color: var(--muted);
+      }
+
+      code,
+      pre {
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       }
+
       pre {
-        background: #111;
-        color: #f5f5f5;
+        margin: 1.25rem 0 0;
+        background: var(--code-bg);
+        color: var(--code-text);
         padding: 1rem;
-        border-radius: 0.5rem;
+        border-radius: 0.875rem;
         overflow-x: auto;
       }
-      a { color: inherit; }
+
+      ul {
+        padding-left: 1.1rem;
+        margin-bottom: 0;
+      }
+
+      .lede {
+        max-width: 40rem;
+        font-size: 1.05rem;
+      }
+
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1rem;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .link-chip {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.55rem 0.9rem;
+        color: var(--text);
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .link-chip:hover {
+        text-decoration: none;
+        border-color: var(--accent);
+      }
+
+      .footnote {
+        margin-top: 1rem;
+        font-size: 0.95rem;
+      }
     </style>
   </head>
   <body>
-    <h1>AWDL-JIT</h1>
-    <p>Interactive one-command setup for AWDL-backed launchers.</p>
-    <pre><code>curl -fsSL https://blairhudson.com/awdl-jit/run-latest.sh | bash</code></pre>
-    <p><a href="https://github.com/blairhudson/awdl-jit">View the source on GitHub</a></p>
+    <main>
+      <section class="hero">
+        <h1>AWDL-JIT</h1>
+        <p class="lede">One-command setup for the <a href="https://github.com/james-howard/AWDLControl">AWDLControl</a> workflow <a href="https://nvidia.custhelp.com/app/answers/detail/a_id/5801/~/i-am-experiencing-stuttering%2C-high-latency%2C-or-audio-issues-on-geforce-now-when">recommended by NVIDIA</a> for GeForce NOW on Mac.</p>
+        <pre><code>curl -fsSL https://blairhudson.com/awdl-jit/run-latest.sh | bash</code></pre>
+      </section>
+
+      <section class="section">
+        <h2>What It Does</h2>
+        <ul>
+          <li>Creates <code>NVIDIA GeForce NOW (AWDL).app</code> in <code>~/Applications</code></li>
+          <li>Starts <code>AWDLControl.app</code> before launching GeForce NOW through the generated launcher</li>
+          <li>Stops <code>AWDLControl.app</code> when GeForce NOW quits, if AWDL-JIT started it</li>
+          <li>Adds a fallback watcher for direct GeForce NOW launches</li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Requirements</h2>
+        <ul>
+          <li>macOS</li>
+          <li>Installed <code>/Applications/GeForceNOW.app</code></li>
+          <li>Installed <a href="https://github.com/james-howard/AWDLControl"><code>AWDLControl.app</code></a></li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Links</h2>
+        <div class="links">
+          <a class="link-chip" href="https://github.com/blairhudson/awdl-jit">GitHub Repository</a>
+          <a class="link-chip" href="https://github.com/james-howard/AWDLControl">AWDLControl</a>
+          <a class="link-chip" href="https://nvidia.custhelp.com/app/answers/detail/a_id/5801/~/i-am-experiencing-stuttering%2C-high-latency%2C-or-audio-issues-on-geforce-now-when">NVIDIA Support Article</a>
+        </div>
+        <p class="footnote">AWDL-JIT does not redistribute or modify GeForce NOW or AWDLControl.</p>
+      </section>
+    </main>
   </body>
 </html>
