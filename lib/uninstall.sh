@@ -27,5 +27,12 @@ cmd_uninstall() {
   rm -f "$launchagent_path"
   rm -rf "$launcher_path" "$support_dir"
 
+  while IFS= read -r legacy_path; do
+    [ -n "$legacy_path" ] || continue
+    rm -rf "$legacy_path"
+  done <<EOF
+$(target_legacy_launcher_paths)
+EOF
+
   log "Removed AWDL-JIT artifacts for $TARGET_DISPLAY_NAME"
 }

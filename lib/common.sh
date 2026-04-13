@@ -181,6 +181,18 @@ target_launcher_path() {
   printf '%s/%s.app\n' "$APPLICATIONS_DIR" "$TARGET_LAUNCHER_NAME"
 }
 
+target_legacy_launcher_paths() {
+  local legacy_name
+
+  if ! declare -p TARGET_LEGACY_LAUNCHER_NAMES >/dev/null 2>&1; then
+    return 0
+  fi
+
+  for legacy_name in "${TARGET_LEGACY_LAUNCHER_NAMES[@]}"; do
+    printf '%s/%s.app\n' "$APPLICATIONS_DIR" "$legacy_name"
+  done
+}
+
 target_launchagent_label() {
   printf 'io.github.blairhudson.awdl-jit.watch.%s\n' "$1"
 }

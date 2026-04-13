@@ -159,6 +159,20 @@ bootstrap_launchagent() {
   return 1
 }
 
+remove_legacy_launchers() {
+  local current_launcher_path="$1"
+  local legacy_path
+
+  while IFS= read -r legacy_path; do
+    [ -n "$legacy_path" ] || continue
+    if [ "$legacy_path" != "$current_launcher_path" ]; then
+      rm -rf "$legacy_path"
+    fi
+  done <<EOF
+$(target_legacy_launcher_paths)
+EOF
+}
+
 install_target() {
   local target_id="$1"
   local repair_mode="${2:-0}"
@@ -236,6 +250,7 @@ install_target() {
   plist_path="$launcher_path/Contents/Info.plist"
   configure_launcher_plist "$plist_path" "$scheme" "$extension"
   copy_target_icon_into_launcher "$target_app_path" "$launcher_path"
+  remove_legacy_launchers "$launcher_path"
   launcher_registered "$launcher_path"
 
   if [ "${AWDL_JIT_SKIP_HANDLER_REGISTRATION:-0}" != "1" ]; then

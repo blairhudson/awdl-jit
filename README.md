@@ -33,7 +33,7 @@ For a supported target, `awdl-jit install` generates:
 - a `launchd` watcher in `~/Library/LaunchAgents/`
 - URL and file handler registrations for the generated launcher
 
-For GeForce NOW, the launcher is named `AWDL-JIT for GFN.app`.
+For GeForce NOW, the launcher is named `NVIDIA GeForce NOW (AWDL).app`.
 
 ## Why both a launcher and a watcher?
 
@@ -121,7 +121,7 @@ AWDL_JIT_SKIP_LAUNCHAGENT_LOAD=1 \
 
 For `geforcenow`, AWDL-JIT writes to:
 
-- `~/Applications/AWDL-JIT for GFN.app`
+- `~/Applications/NVIDIA GeForce NOW (AWDL).app`
 - `~/Library/Application Support/AWDL-JIT/geforcenow/`
 - `~/Library/LaunchAgents/io.github.blairhudson.awdl-jit.watch.geforcenow.plist`
 
