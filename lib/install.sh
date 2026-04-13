@@ -87,6 +87,49 @@ restore_previous_handlers() {
   fi
 }
 
+launchagent_service_loaded() {
+  local label="$1"
+  launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1
+}
+
+wait_for_launchagent_unload() {
+  local label="$1"
+  local attempt=0
+
+  while [ "$attempt" -lt 20 ]; do
+    if ! launchagent_service_loaded "$label"; then
+      return 0
+    fi
+    attempt=$((attempt + 1))
+    sleep 0.5
+  done
+
+  return 1
+}
+
+bootstrap_launchagent() {
+  local label="$1"
+  local launchagent_path="$2"
+  local attempt=0
+  local output
+
+  launchctl bootout "gui/$(id -u)/$label" >/dev/null 2>&1 || true
+  wait_for_launchagent_unload "$label" || true
+
+  while [ "$attempt" -lt 5 ]; do
+    if output="$(launchctl bootstrap "gui/$(id -u)" "$launchagent_path" 2>&1)"; then
+      return 0
+    fi
+    attempt=$((attempt + 1))
+    if [ "$attempt" -lt 5 ]; then
+      sleep 1
+    fi
+  done
+
+  printf '%s\n' "$output" >&2
+  return 1
+}
+
 install_target() {
   local target_id="$1"
   local repair_mode="${2:-0}"
@@ -94,7 +137,7 @@ install_target() {
   load_target "$target_id"
 
   local target_app_path awdl_app_path support_dir state_dir launcher_path launchagent_path
-  local tool_path launcher_source monitor_path watcher_path runtime_path config_path launchagent_source
+  local tool_path launcher_source monitor_path watcher_path runtime_path config_path launchagent_source label
   local scheme extension plist_path
 
   target_app_path="$(find_app_by_bundle_id "$TARGET_BUNDLE_ID" "${TARGET_APP_CANDIDATES[@]}")" || {
@@ -116,6 +159,7 @@ install_target() {
   state_dir="$(target_state_dir "$target_id")"
   launcher_path="$(target_launcher_path)"
   launchagent_path="$(target_launchagent_path "$target_id")"
+  label="$(target_launchagent_label "$target_id")"
   mkdir -p "$support_dir" "$state_dir/events"
 
   scheme="${TARGET_URL_SCHEMES[0]}"
@@ -174,8 +218,7 @@ install_target() {
 
   cp "$launchagent_source" "$launchagent_path"
   if [ "${AWDL_JIT_SKIP_LAUNCHAGENT_LOAD:-0}" != "1" ]; then
-    launchctl bootout "gui/$(id -u)"/"$(target_launchagent_label "$target_id")" >/dev/null 2>&1 || true
-    launchctl bootstrap "gui/$(id -u)" "$launchagent_path"
+    bootstrap_launchagent "$label" "$launchagent_path"
   else
     info "Skipping LaunchAgent bootstrap"
   fi
