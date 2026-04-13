@@ -62,7 +62,7 @@ interactive_choose_target() {
     return 0
   fi
 
-  choice="$(interactive_prompt_choice 'Supported targets found:' "${labels[@]}")"
+  choice="$(interactive_prompt_choice 'Supported targets found:' "${labels[@]}")" || return 1
   printf '%s\n' "${candidates[$((choice - 1))]}"
 }
 
@@ -95,7 +95,7 @@ interactive_target_menu() {
   choices+=("Quit")
   actions+=("quit")
 
-  choice="$(interactive_prompt_choice 'Choose an action:' "${choices[@]}")"
+  choice="$(interactive_prompt_choice 'Choose an action:' "${choices[@]}")" || return 1
   printf '%s\n' "${actions[$((choice - 1))]}"
 }
 
@@ -115,7 +115,10 @@ cmd_interactive() {
     return 1
   fi
 
-  action="$(interactive_target_menu "$target_id")"
+  action="$(interactive_target_menu "$target_id")" || {
+    err "Interactive mode requires a readable terminal. Pass a direct command for non-interactive use."
+    return 1
+  }
   case "$action" in
     install)
       cmd_install "$target_id"

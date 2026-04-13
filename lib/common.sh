@@ -13,29 +13,51 @@ log() {
 }
 
 prompt_out() {
-  if [ -w /dev/tty ]; then
+  if prompt_has_tty; then
     printf '%s' "$*" > /dev/tty
-  else
-    printf '%s' "$*" >&2
+    return 0
   fi
+  printf '%s' "$*" >&2
 }
 
 prompt_outln() {
-  prompt_out "$*"
-  prompt_out "\n"
+  if prompt_has_tty; then
+    printf '%s\n' "$*" > /dev/tty
+    return 0
+  fi
+  printf '%s\n' "$*" >&2
 }
 
 prompt_read() {
   local __var_name="$1"
   local __value
 
-  if [ -r /dev/tty ]; then
-    IFS= read -r __value < /dev/tty || return 1
-  else
-    IFS= read -r __value || return 1
+  if prompt_has_tty && IFS= read -r __value < /dev/tty; then
+    printf -v "$__var_name" '%s' "$__value"
+    return 0
   fi
 
-  printf -v "$__var_name" '%s' "$__value"
+  if IFS= read -r __value; then
+    printf -v "$__var_name" '%s' "$__value"
+    return 0
+  fi
+
+  return 1
+}
+
+prompt_has_tty() {
+  if [ -n "${AWDL_JIT_HAS_TTY:-}" ]; then
+    [ "$AWDL_JIT_HAS_TTY" = "1" ]
+    return
+  fi
+
+  if { : < /dev/tty; } 2>/dev/null; then
+    AWDL_JIT_HAS_TTY=1
+    return 0
+  fi
+
+  AWDL_JIT_HAS_TTY=0
+  return 1
 }
 
 info() {
