@@ -51,6 +51,35 @@ configure_launcher_plist() {
   /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:0 string $TARGET_DOCUMENT_UTI" "$plist_path"
 }
 
+copy_target_icon_into_launcher() {
+  local target_app_path="$1"
+  local launcher_path="$2"
+  local target_plist_path target_resources_path launcher_resources_path icon_name source_icon_path dest_icon_path
+
+  target_plist_path="$target_app_path/Contents/Info.plist"
+  target_resources_path="$target_app_path/Contents/Resources"
+  launcher_resources_path="$launcher_path/Contents/Resources"
+
+  icon_name="$(plist_get "$target_plist_path" ':CFBundleIconFile' || true)"
+  if [ -z "$icon_name" ]; then
+    return 0
+  fi
+  case "$icon_name" in
+    *.icns) ;;
+    *) icon_name="$icon_name.icns" ;;
+  esac
+
+  source_icon_path="$target_resources_path/$icon_name"
+  if [ ! -f "$source_icon_path" ]; then
+    return 0
+  fi
+
+  dest_icon_path="$launcher_resources_path/$icon_name"
+  cp "$source_icon_path" "$dest_icon_path"
+  plist_upsert "$launcher_path/Contents/Info.plist" ':CFBundleIconFile' string "$icon_name"
+  /usr/libexec/PlistBuddy -c 'Delete :CFBundleIconName' "$launcher_path/Contents/Info.plist" >/dev/null 2>&1 || true
+}
+
 save_previous_handlers() {
   local tool_path="$1"
   local support_dir="$2"
@@ -206,6 +235,7 @@ install_target() {
   osacompile -o "$launcher_path" "$launcher_source" >/dev/null
   plist_path="$launcher_path/Contents/Info.plist"
   configure_launcher_plist "$plist_path" "$scheme" "$extension"
+  copy_target_icon_into_launcher "$target_app_path" "$launcher_path"
   launcher_registered "$launcher_path"
 
   if [ "${AWDL_JIT_SKIP_HANDLER_REGISTRATION:-0}" != "1" ]; then
