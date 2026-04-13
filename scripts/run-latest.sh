@@ -80,4 +80,8 @@ RUNNER="$TMP_DIR/AWDL-JIT/bin/awdl-jit"
   exit 1
 }
 
-exec "$RUNNER" "${FORWARD_ARGS[@]}"
+if [ "${#FORWARD_ARGS[@]}" -gt 0 ]; then
+  exec "$RUNNER" "${FORWARD_ARGS[@]}"
+else
+  exec "$RUNNER"
+fi
